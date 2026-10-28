@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Splash Car — A fresh start</title>
+  <meta name="description" content="Splash Car — automotive care. A cleaner journey ahead." />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" />
+  <link rel="stylesheet" href="styles.css" />
+  <script>
+    // Pick the design direction before first paint: ?direction=dark or ?direction=light
+    (function () {
+      var d = new URLSearchParams(location.search).get('direction');
+      if (d === 'dark' || d === 'light') document.documentElement.dataset.theme = d;
+    })();
+  </script>
+</head>
+<body>
+  <main>
+    <div class="top">
+      <header class="site-header">
+        <a href="#" class="logo" aria-label="Splash Car home">
+          <img class="logo-on-light" src="assets/splash-car-logo.png" alt="Splash Car" />
+          <img class="logo-on-dark" src="assets/splash-car-logo-white.png" alt="Splash Car" />
+        </a>
+        <a class="header-contact" href="#contact">
+          Contact us
+          <span class="arrow-chip" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M5 12h13M13 6.5 18.5 12 13 17.5" /></svg>
+            <svg viewBox="0 0 24 24"><path d="M5 12h13M13 6.5 18.5 12 13 17.5" /></svg>
+          </span>
+        </a>
+      </header>
+
+      <section class="hero">
+        <div class="hero-copy">
+          <h1 id="hero-title">Under <span>Construction</span></h1>
+        </div>
+
+        <div class="scene" role="img" aria-label="A car drives into a glowing blue tunnel where it is sprayed, covered in foam, rinsed and dried, then emerges gleaming into the open.">
+          <canvas class="tunnel-back" aria-hidden="true"></canvas>
+          <div class="car" aria-hidden="true">
+            <div class="car-glow"></div>
+            <img class="car-body" src="assets/car-body.png" alt="" draggable="false" />
+            <span class="wheel wheel-rear"><img src="assets/wheel-rear-full.png" alt="" /><span class="spin"></span></span>
+            <span class="wheel wheel-front"><img src="assets/wheel-front-full.png" alt="" /><span class="spin"></span></span>
+            <canvas class="car-foam"></canvas>
+            <canvas class="car-sheen"></canvas>
+            <img class="car-reflection" src="assets/car-clean.png" alt="" />
+          </div>
+          <canvas class="tunnel-front" aria-hidden="true"></canvas>
+          <div class="scene-bottom">
+            <div class="wash-stage" aria-hidden="true"><span class="wash-step"></span><span class="wash-name"></span></div>
+            <button class="pause" type="button" aria-label="Pause animation" aria-pressed="false">
+              <svg class="i-pause" viewBox="0 0 24 24"><path d="M9 6v12M15 6v12" /></svg>
+              <svg class="i-play" viewBox="0 0 24 24"><path d="M8.5 6.5v11l9-5.5z" /></svg>
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <section class="contact" id="contact">
+      <div class="contact-copy">
+        <p class="eyebrow">Stay in the loop</p>
+        <h2>Good things<br />start with<br /><span>a conversation.</span></h2>
+        <p>Have a question or want to know what’s next?<br class="desktop" /> We’d love to hear from you.</p>
+        <div class="brand-note"><span class="small-line"></span> A platform by Levanta Group</div>
+      </div>
+
+      <form class="contact-form" novalidate>
+        <h3>Contact us</h3>
+        <div class="field">
+          <label for="name">Name</label>
+          <input id="name" name="name" autocomplete="name" placeholder="Your name" required maxlength="100" />
+        </div>
+        <div class="field">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" autocomplete="email" placeholder="you@example.com" required maxlength="254" />
+        </div>
+        <div class="field">
+          <label for="message">Message</label>
+          <textarea id="message" name="message" placeholder="How can we help?" rows="3" required maxlength="5000"></textarea>
+        </div>
+        <label class="checkbox">
+          <input type="checkbox" name="emailOptIn" />
+          <span>Sign up for our email list for updates, promotions and more.</span>
+        </label>
+        <div class="honeypot" aria-hidden="true"><label>Leave empty<input tabindex="-1" autocomplete="off" name="website" /></label></div>
+        <button class="send" type="submit">
+          <span class="send-label">Send</span>
+          <span class="arrow-chip" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M5 12h13M13 6.5 18.5 12 13 17.5" /></svg>
+            <svg viewBox="0 0 24 24"><path d="M5 12h13M13 6.5 18.5 12 13 17.5" /></svg>
+          </span>
+        </button>
+        <div class="form-status" role="status"></div>
+      </form>
+    </section>
+
+    <footer class="site-footer">
+      <a href="#" class="logo" aria-label="Splash Car home">
+        <img class="logo-on-light" src="assets/splash-car-logo.png" alt="Splash Car" />
+        <img class="logo-on-dark" src="assets/splash-car-logo-white.png" alt="Splash Car" />
+      </a>
+      <div class="legal">
+        <p>© 2026 Splash Car</p>
+        <nav aria-label="Legal">
+          <a href="terms.html">Terms &amp; Conditions</a>
+          <a href="privacy.html">Privacy Policy</a>
+        </nav>
+      </div>
+      <span class="tagline">Automotive care. A cleaner journey ahead.</span>
+    </footer>
+  </main>
+
+  <!-- Review panel: only shown with ?review in the URL. Remove before launch if not needed. -->
+  <div class="review" hidden>
+    <p class="review-title">Review</p>
+    <div class="review-row" role="group" aria-label="Direction">
+      <button type="button" data-direction="light">Light</button>
+      <button type="button" data-direction="dark">Dark grey</button>
+    </div>
+    <label class="review-row">
+      <span class="sr-only">Title wording</span>
+      <select class="review-title-select">
+        <option value="Under <span>Construction</span>">Under Construction</option>
+        <option value="A new era of <span>car care</span>">A new era of car care</option>
+        <option value="Driving into <span>a new era</span>">Driving into a new era</option>
+        <option value="The future of clean <span>is arriving</span>">The future of clean is arriving</option>
+        <option value="Something brilliant <span>is on its way</span>">Something brilliant is on its way</option>
+      </select>
+    </label>
+  </div>
+
+  <script src="main.js"></script>
+</body>
+</html>
