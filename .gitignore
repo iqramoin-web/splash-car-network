@@ -4,3 +4,5 @@
 # old compiled copy of the previous site, kept locally for reference
 original.html
 _next/
+.vercel
+.env*
