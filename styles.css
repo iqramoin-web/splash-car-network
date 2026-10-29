@@ -72,7 +72,7 @@ h1, h2, h3, p { margin: 0; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
 /* ---------- Logo (swaps per direction, colours untouched) ---------- */
-.logo { position: relative; display: block; flex: none; width: 160px; height: 81px; }
+.logo { position: relative; display: block; flex: none; width: 96px; height: 50px; }
 .logo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
 .logo-on-dark { opacity: 0; }
 :root[data-theme="dark"] .logo-on-light { opacity: 0; }
@@ -395,7 +395,7 @@ h1 > span { color: var(--blue-soft); }
   padding: 20px 6%;
   border-top: 1px solid var(--line);
 }
-.site-footer .logo { width: 145px; height: 74px; }
+.site-footer .logo { width: 84px; height: 44px; }
 .legal { display: flex; align-items: center; gap: 18px; font-size: 10px; color: var(--faint); }
 .legal nav { display: flex; gap: 18px; }
 .legal nav a { position: relative; transition: color .2s; }
@@ -444,7 +444,7 @@ h1 > span { color: var(--blue-soft); }
 }
 @media (max-width: 600px) {
   .site-header { height: 88px; }
-  .logo { width: 132px; height: 67px; }
+  .logo { width: 82px; height: 43px; }
   .header-contact { gap: 10px; font-size: 11px; }
   .header-contact .arrow-chip { width: 28px; height: 28px; }
   .hero-copy { padding: 22px 7% 0; }
