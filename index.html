@@ -8,8 +8,8 @@
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" />
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" />
+  <link rel="stylesheet" href="styles.css?v=17" />
   <script>
     // Pick the design direction before first paint: ?direction=dark or ?direction=light
     (function () {
@@ -40,18 +40,8 @@
           <h1 id="hero-title">Under <span>Construction</span></h1>
         </div>
 
-        <div class="scene" role="img" aria-label="A car drives into a glowing blue tunnel where it is sprayed, covered in foam, rinsed and dried, then emerges gleaming into the open.">
-          <canvas class="tunnel-back" aria-hidden="true"></canvas>
-          <div class="car" aria-hidden="true">
-            <div class="car-glow"></div>
-            <img class="car-body" src="assets/car-body.png" alt="" draggable="false" />
-            <span class="wheel wheel-rear"><img src="assets/wheel-rear-full.png" alt="" /><span class="spin"></span></span>
-            <span class="wheel wheel-front"><img src="assets/wheel-front-full.png" alt="" /><span class="spin"></span></span>
-            <canvas class="car-foam"></canvas>
-            <canvas class="car-sheen"></canvas>
-            <img class="car-reflection" src="assets/car-clean.png" alt="" />
-          </div>
-          <canvas class="tunnel-front" aria-hidden="true"></canvas>
+        <div class="scene" role="img" aria-label="Head-on view of a car wash tunnel lit in blue: a car rolls toward the camera, is sprayed and covered in snow foam, scrubbed by spinning brushes, rinsed, then drives forward gleaming.">
+          <canvas class="wash-canvas" aria-hidden="true"></canvas>
           <div class="scene-bottom">
             <div class="wash-stage" aria-hidden="true"><span class="wash-step"></span><span class="wash-name"></span></div>
             <button class="pause" type="button" aria-label="Pause animation" aria-pressed="false">
@@ -136,6 +126,6 @@
     </label>
   </div>
 
-  <script src="main.js"></script>
+  <script src="main.js?v=17"></script>
 </body>
 </html>
