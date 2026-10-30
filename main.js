@@ -861,7 +861,13 @@
      Its full width is treated as 1.95 m. Headlight centres are given as
      fractions of the image so the bloom lines up with the lamps. */
 
-  var CAR_PHOTO = { src: 'assets/car-front-cut.png', width: 2.1, lights: [[0.16, 0.45], [0.84, 0.45]] };
+  var CAR_PHOTO = {
+    src: 'assets/car-front-cut.png',
+    width: 2.1,
+    lights: [[0.185, 0.45], [0.815, 0.45]],
+    // windscreen outline (fractions of the image), darkened to tinted glass
+    glass: [[0.215, 0.035], [0.785, 0.035], [0.845, 0.27], [0.155, 0.27]]
+  };
   var carImg = new Image();
   var carReady = false;
   var fx, fctx, FW = 900, FH;
@@ -879,33 +885,74 @@
   function drawCarPhoto(time, z, lights, st) {
     var s = F / z;
     var wPx = CAR_PHOTO.width * s, hPx = wPx * FH / FW;
-    var x = cx - wPx / 2, yb = sy(0, z), y = yb - hPx;
+    var moving = Math.abs(z - Z_HERO) > 0.01 ? 1 : 0;
+    // a little suspension bob while driving, and a rock as the rollers push
+    var sway = Math.sin(time * 7) * 0.004 * wPx * st.scrub;
+    var bob = Math.sin(time * 16) * 0.004 * hPx * moving;
+    var x = cx - wPx / 2 + sway, yb = sy(0, z), y = yb - hPx + bob;
     // fade in out of the far fog, and out as the car rolls past the lens
     var fogA = (1 - smooth(26, 42, z) * 0.7) * (1 - smooth(40, 66, z)) * smooth(1.7, 3.3, z);
     var m = FW / CAR_PHOTO.width; // image px per metre
 
-    // compose the lit, washed car off-screen in image space
+    // ----- compose the lit, washed car off-screen in image space -----
+    fctx.filter = 'none';
     fctx.globalCompositeOperation = 'source-over';
     fctx.globalAlpha = 1;
     fctx.clearRect(0, 0, FW, FH);
     fctx.drawImage(carImg, 0, 0, FW, FH);
+    // cool tunnel light: multiply keeps the paint's contrast and highlights
+    fctx.globalCompositeOperation = 'multiply';
+    fctx.fillStyle = 'rgb(92,112,172)';
+    fctx.fillRect(0, 0, FW, FH);
+    fctx.globalCompositeOperation = 'destination-in';
+    fctx.drawImage(carImg, 0, 0, FW, FH);
     fctx.globalCompositeOperation = 'source-atop';
-    // pull the studio-lit paint down into the dark tunnel
-    fctx.fillStyle = 'rgba(4,10,34,.45)';
+    // light falls from the ceiling: lower bumper and intakes sit in shadow
+    var shade = fctx.createLinearGradient(0, FH * 0.5, 0, FH);
+    shade.addColorStop(0, 'rgba(0,2,10,0)');
+    shade.addColorStop(1, 'rgba(0,2,10,.55)');
+    fctx.fillStyle = shade;
+    fctx.fillRect(0, FH * 0.5, FW, FH * 0.5);
+    // rim light on roof, pillars and hood from the overhead LEDs
+    var rim = fctx.createLinearGradient(0, 0, 0, FH * 0.45);
+    rim.addColorStop(0, 'rgba(150,185,255,' + (0.22 * lights).toFixed(3) + ')');
+    rim.addColorStop(1, 'rgba(150,185,255,0)');
+    fctx.fillStyle = rim;
+    fctx.fillRect(0, 0, FW, FH * 0.45);
+    // dark tinted windscreen with the tunnel LEDs reflected in it
+    var gp = CAR_PHOTO.glass;
+    fctx.beginPath();
+    fctx.moveTo(gp[0][0] * FW, gp[0][1] * FH);
+    for (var q = 1; q < gp.length; q++) fctx.lineTo(gp[q][0] * FW, gp[q][1] * FH);
+    fctx.closePath();
+    fctx.save();
+    fctx.clip();
+    var gg = fctx.createLinearGradient(0, gp[0][1] * FH, 0, gp[2][1] * FH);
+    gg.addColorStop(0, 'rgba(4,7,18,.9)');
+    gg.addColorStop(1, 'rgba(10,18,40,.8)');
+    fctx.fillStyle = gg;
     fctx.fillRect(0, 0, FW, FH);
-    // cool blue wash from the tunnel lights, stronger on the upper surfaces
-    var lg = fctx.createLinearGradient(0, 0, 0, FH);
-    lg.addColorStop(0, 'rgba(70,120,255,' + (0.28 * lights).toFixed(3) + ')');
-    lg.addColorStop(0.6, 'rgba(40,80,200,' + (0.12 * lights).toFixed(3) + ')');
-    lg.addColorStop(1, 'rgba(20,40,120,0)');
-    fctx.fillStyle = lg;
-    fctx.fillRect(0, 0, FW, FH);
+    fctx.globalCompositeOperation = 'lighter';
+    fctx.strokeStyle = 'rgba(120,190,255,' + (0.65 * lights).toFixed(3) + ')';
+    fctx.lineWidth = FH * 0.012;
+    fctx.lineCap = 'round';
+    [[0.3, 0.47], [0.53, 0.7]].forEach(function (b) {
+      fctx.beginPath(); fctx.moveTo(b[0] * FW, FH * 0.09); fctx.lineTo(b[1] * FW, FH * 0.09); fctx.stroke();
+    });
+    var dg = fctx.createLinearGradient(FW * 0.2, FH * 0.27, FW * 0.55, FH * 0.03);
+    dg.addColorStop(0, 'rgba(110,150,240,0)');
+    dg.addColorStop(0.5, 'rgba(110,150,240,' + (0.12 * lights).toFixed(3) + ')');
+    dg.addColorStop(1, 'rgba(110,150,240,0)');
+    fctx.fillStyle = dg;
+    fctx.fillRect(0, 0, FW, FH * 0.3);
+    fctx.restore();
+    fctx.globalCompositeOperation = 'source-atop';
     // royal-blue bounce light from the rollers on the car's flanks
     var near = (1 - smooth(6.5, 12, z)) * (0.5 + 0.5 * st.scrub);
     if (near > 0.01) {
       [[0, 1], [FW, -1]].forEach(function (e) {
-        var bg2 = fctx.createLinearGradient(e[0], 0, e[0] + e[1] * FW * 0.32, 0);
-        bg2.addColorStop(0, 'rgba(50,80,255,' + (0.4 * near).toFixed(3) + ')');
+        var bg2 = fctx.createLinearGradient(e[0], 0, e[0] + e[1] * FW * 0.3, 0);
+        bg2.addColorStop(0, 'rgba(50,80,255,' + (0.38 * near).toFixed(3) + ')');
         bg2.addColorStop(1, 'rgba(50,80,255,0)');
         fctx.fillStyle = bg2;
         fctx.fillRect(0, 0, FW, FH);
@@ -913,15 +960,16 @@
     }
     // water beads
     if (st.beads > 0.02) {
-      fctx.fillStyle = 'rgba(220,235,255,' + (0.75 * st.beads).toFixed(3) + ')';
+      fctx.fillStyle = 'rgba(220,235,255,' + (0.7 * st.beads).toFixed(3) + ')';
       for (var b = 0; b < beads.length; b++) {
         fctx.beginPath();
         fctx.arc((beads[b].x / CAR_PHOTO.width + 0.5) * FW, FH - beads[b].y * m, Math.max(1, beads[b].r * m), 0, 6.283);
         fctx.fill();
       }
     }
-    // lacy foam, drained top-down by the rinse
+    // soft foam, drained top-down by the rinse
     if (st.foam > 0.01) {
+      fctx.filter = 'blur(0.7px)';
       var nVis = Math.floor(foamBlobs.length * st.foam);
       var limit = 1.34 - st.drain * 1.45;
       for (var i = 0; i < nVis; i++) {
@@ -929,12 +977,12 @@
         var yy = fb.y - st.drain * 0.3 * (0.4 + fb.k);
         if (yy > limit || yy < 0.14) continue;
         var wob = Math.sin(time * 11 + fb.ph) * 0.007 * st.scrub;
-        var r = fb.r * (1 + 0.25 * st.scrub * fb.k) * m;
+        var r = fb.r * (1.15 + 0.25 * st.scrub * fb.k) * m;
         var px = (fb.x + wob) / CAR_PHOTO.width * FW + FW / 2, py = FH - yy * m;
-        fctx.globalAlpha = 0.55 + 0.35 * fb.k;
+        fctx.globalAlpha = 0.5 + 0.35 * fb.k;
         fctx.drawImage(fleck, px - r, py - r, r * 2, r * 2);
         if (fb.drip) {
-          fctx.strokeStyle = 'rgba(235,242,255,.6)';
+          fctx.strokeStyle = 'rgba(230,238,255,.55)';
           fctx.lineWidth = Math.max(1, r * 0.35);
           fctx.lineCap = 'round';
           fctx.beginPath();
@@ -943,8 +991,9 @@
           fctx.stroke();
         }
       }
+      fctx.filter = 'none';
       fctx.globalAlpha = 1;
-      fctx.fillStyle = 'rgba(70,110,230,.1)';
+      fctx.fillStyle = 'rgba(70,110,230,.12)';
       fctx.fillRect(0, 0, FW, FH);
     }
     // shine sweep after the rinse
@@ -952,54 +1001,87 @@
       var swx = (-0.2 + st.sweep * 1.4) * FW;
       var sg = fctx.createLinearGradient(swx - FW * 0.12, 0, swx + FW * 0.12, 0);
       sg.addColorStop(0, 'rgba(200,225,255,0)');
-      sg.addColorStop(0.5, 'rgba(215,232,255,' + (0.4 * Math.sin(Math.PI * st.sweep)).toFixed(3) + ')');
+      sg.addColorStop(0.5, 'rgba(215,232,255,' + (0.35 * Math.sin(Math.PI * st.sweep)).toFixed(3) + ')');
       sg.addColorStop(1, 'rgba(200,225,255,0)');
       fctx.fillStyle = sg;
       fctx.fillRect(0, 0, FW, FH);
     }
-    // the photo's own lamps punch back through foam
+    // headlamp cores punch through foam
     fctx.globalCompositeOperation = 'lighter';
     CAR_PHOTO.lights.forEach(function (l) {
-      var gx = l[0] * FW, gy = l[1] * FH, gr = FW * 0.09;
+      var gx = l[0] * FW, gy = l[1] * FH, gr = FW * 0.05;
       var hg = fctx.createRadialGradient(gx, gy, 0, gx, gy, gr);
-      hg.addColorStop(0, 'rgba(255,255,255,.9)');
+      hg.addColorStop(0, 'rgba(255,255,255,1)');
+      hg.addColorStop(0.4, 'rgba(225,238,255,.7)');
       hg.addColorStop(1, 'rgba(160,200,255,0)');
       fctx.fillStyle = hg;
       fctx.fillRect(gx - gr, gy - gr, gr * 2, gr * 2);
     });
     fctx.globalCompositeOperation = 'source-over';
 
-    // reflection in the wet floor
+    // ----- place it in the scene -----
+    // headlight beams and pools of light on the wet floor ahead of the car
+    ctx.globalCompositeOperation = 'lighter';
+    CAR_PHOTO.lights.forEach(function (l) {
+      var hx = x + l[0] * wPx, hy = y + l[1] * hPx;
+      var lx = (l[0] - 0.5) * CAR_PHOTO.width;
+      var zf = Math.max(0.9, z - 2.4), zp = Math.max(0.9, z - 1.3);
+      var bx1 = sx(lx - 0.5, zf), bx2 = sx(lx + 0.5, zf), by = sy(0, zf);
+      var bg3 = ctx.createLinearGradient(0, hy, 0, by);
+      bg3.addColorStop(0, 'rgba(200,220,255,' + (0.16 * fogA).toFixed(3) + ')');
+      bg3.addColorStop(1, 'rgba(200,220,255,0)');
+      ctx.fillStyle = bg3;
+      ctx.beginPath();
+      ctx.moveTo(hx - 0.04 * s, hy); ctx.lineTo(hx + 0.04 * s, hy); ctx.lineTo(bx2, by); ctx.lineTo(bx1, by);
+      ctx.closePath();
+      ctx.fill();
+      var px2 = sx(lx, zp), py2 = sy(0, zp), pr = 0.7 * F / zp;
+      ctx.save();
+      ctx.translate(px2, py2); ctx.scale(1, 0.18);
+      var pg = ctx.createRadialGradient(0, 0, 0, 0, 0, pr);
+      pg.addColorStop(0, 'rgba(190,215,255,' + (0.22 * fogA).toFixed(3) + ')');
+      pg.addColorStop(1, 'rgba(190,215,255,0)');
+      ctx.fillStyle = pg;
+      ctx.fillRect(-pr, -pr, pr * 2, pr * 2);
+      ctx.restore();
+    });
+    ctx.globalCompositeOperation = 'source-over';
+
+    // soft, dark reflection in the wet floor
     ctx.save();
-    ctx.globalAlpha = 0.22 * fogA;
+    ctx.filter = 'blur(' + Math.max(1, 0.012 * s).toFixed(1) + 'px)';
+    ctx.globalAlpha = 0.2 * fogA;
     ctx.translate(x, yb);
     ctx.scale(1, -1);
     ctx.drawImage(fx, 0, -hPx * 0.98, wPx, hPx);
     ctx.restore();
-    var rg = ctx.createLinearGradient(0, yb, 0, yb + hPx * 0.7);
+    var rg = ctx.createLinearGradient(0, yb, 0, yb + hPx * 0.6);
     rg.addColorStop(0, 'rgba(4,7,16,0)');
     rg.addColorStop(1, 'rgba(4,7,16,1)');
     ctx.fillStyle = rg;
-    ctx.fillRect(x - 2, yb, wPx + 4, hPx * 0.7);
+    ctx.fillRect(x - 2, yb, wPx + 4, hPx * 0.6);
 
-    // contact shadow, then the car
-    var sh = ctx.createRadialGradient(cx, yb, 0, cx, yb, wPx * 0.6);
-    sh.addColorStop(0, 'rgba(0,0,0,.8)');
-    sh.addColorStop(1, 'rgba(0,0,0,0)');
-    ctx.save(); ctx.translate(0, yb); ctx.scale(1, 0.08); ctx.translate(0, -yb);
-    ctx.fillStyle = sh; ctx.fillRect(cx - wPx * 0.6, yb - wPx * 0.6, wPx * 1.2, wPx * 1.2);
-    ctx.restore();
+    // ground contact: wide soft shadow plus tight occlusion under the tyres
+    [[0.62, 0.1, 0.75], [0.5, 0.035, 0.9]].forEach(function (sh) {
+      var g = ctx.createRadialGradient(cx, yb, 0, cx, yb, wPx * sh[0]);
+      g.addColorStop(0, 'rgba(0,0,0,' + (sh[2] * fogA).toFixed(3) + ')');
+      g.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.save(); ctx.translate(0, yb); ctx.scale(1, sh[1]); ctx.translate(0, -yb);
+      ctx.fillStyle = g; ctx.fillRect(cx - wPx * sh[0], yb - wPx * sh[0], wPx * sh[0] * 2, wPx * sh[0] * 2);
+      ctx.restore();
+    });
+
     ctx.globalAlpha = fogA;
     ctx.drawImage(fx, x, y, wPx, hPx);
     ctx.globalAlpha = 1;
 
-    // headlight bloom in screen space
+    // tight headlight bloom in screen space
     ctx.globalCompositeOperation = 'lighter';
     CAR_PHOTO.lights.forEach(function (l) {
-      var hx = x + l[0] * wPx, hy = y + l[1] * hPx, rr = 0.55 * s;
+      var hx = x + l[0] * wPx, hy = y + l[1] * hPx, rr = 0.32 * s;
       var g = ctx.createRadialGradient(hx, hy, 0, hx, hy, rr);
-      g.addColorStop(0, 'rgba(235,245,255,' + (0.8 * fogA).toFixed(3) + ')');
-      g.addColorStop(0.18, 'rgba(150,190,255,' + (0.38 * fogA).toFixed(3) + ')');
+      g.addColorStop(0, 'rgba(245,250,255,' + (0.85 * fogA).toFixed(3) + ')');
+      g.addColorStop(0.15, 'rgba(170,200,255,' + (0.3 * fogA).toFixed(3) + ')');
       g.addColorStop(1, 'rgba(60,110,255,0)');
       ctx.fillStyle = g;
       ctx.fillRect(hx - rr, hy - rr, rr * 2, rr * 2);
