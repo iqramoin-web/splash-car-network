@@ -8,80 +8,80 @@
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" />
-  <link rel="stylesheet" href="styles.css?v=17" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap" />
+  <link rel="preload" as="image" href="assets/hero-wash.jpg" />
+  <link rel="stylesheet" href="styles.css?v=30" />
   <script>
-    // Pick the design direction before first paint: ?direction=dark or ?direction=light
+    // Before first paint: design direction (?direction=dark|light) and the visitor's saved language
     (function () {
+      var root = document.documentElement;
       var d = new URLSearchParams(location.search).get('direction');
-      if (d === 'dark' || d === 'light') document.documentElement.dataset.theme = d;
+      if (d === 'dark' || d === 'light') root.dataset.theme = d;
+      try { if (localStorage.getItem('splash-lang') === 'ar') { root.lang = 'ar'; root.dir = 'rtl'; } } catch (e) {}
     })();
   </script>
 </head>
 <body>
   <main>
-    <div class="top">
+    <section class="hero">
+      <img class="hero-media" src="assets/hero-wash.jpg" alt="" aria-hidden="true" />
       <header class="site-header">
-        <a href="#" class="logo" aria-label="Splash Car home">
+        <a href="#" class="logo" aria-label="Splash Car home" data-i18n-aria="home">
           <img class="logo-on-light" src="assets/splash-logo.png" alt="Splash" />
           <img class="logo-on-dark" src="assets/splash-logo-white.png" alt="Splash" />
         </a>
-        <a class="header-contact" href="#contact">
-          Contact us
-          <span class="arrow-chip" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><path d="M5 12h13M13 6.5 18.5 12 13 17.5" /></svg>
-            <svg viewBox="0 0 24 24"><path d="M5 12h13M13 6.5 18.5 12 13 17.5" /></svg>
-          </span>
-        </a>
-      </header>
-
-      <section class="hero">
-        <div class="hero-copy">
-          <h1 id="hero-title">Under <span>Construction</span></h1>
-        </div>
-
-        <div class="scene" role="img" aria-label="Head-on view of a car wash tunnel lit in blue: a car rolls toward the camera, is sprayed and covered in snow foam, scrubbed by spinning brushes, rinsed, then drives forward gleaming.">
-          <canvas class="wash-canvas" aria-hidden="true"></canvas>
-          <div class="scene-bottom">
-            <div class="wash-stage" aria-hidden="true"><span class="wash-step"></span><span class="wash-name"></span></div>
-            <button class="pause" type="button" aria-label="Pause animation" aria-pressed="false">
-              <svg class="i-pause" viewBox="0 0 24 24"><path d="M9 6v12M15 6v12" /></svg>
-              <svg class="i-play" viewBox="0 0 24 24"><path d="M8.5 6.5v11l9-5.5z" /></svg>
-            </button>
+        <div class="header-actions">
+          <div class="lang-switch" role="group" aria-label="Language">
+            <button type="button" lang="en" data-lang="en" aria-pressed="true">EN</button>
+            <button type="button" lang="ar" data-lang="ar" aria-pressed="false">عربي</button>
           </div>
+          <a class="header-contact" href="#contact">
+            <span class="contact-label" data-i18n="contact">Contact us</span>
+            <span class="arrow-chip" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M5 12h13M13 6.5 18.5 12 13 17.5" /></svg>
+              <svg viewBox="0 0 24 24"><path d="M5 12h13M13 6.5 18.5 12 13 17.5" /></svg>
+            </span>
+          </a>
         </div>
-      </section>
-    </div>
+      </header>
+      <div class="hero-copy hero-copy--top">
+        <h1 id="hero-title" data-i18n-html="title">Under <span>Construction</span></h1>
+      </div>
+      <div class="hero-copy hero-copy--bottom">
+        <p class="hero-sub" data-i18n="sub">Something new is on its way. Stay tuned.</p>
+      </div>
+      <a class="scroll-cue" href="#contact" aria-label="Scroll to contact" data-i18n-aria="scroll"></a>
+    </section>
 
     <section class="contact" id="contact">
       <div class="contact-copy">
-        <p class="eyebrow">Stay in the loop</p>
-        <h2>Good things<br />start with<br /><span>a conversation.</span></h2>
-        <p>Have a question or want to know what’s next?<br class="desktop" /> We’d love to hear from you.</p>
-        <div class="brand-note"><span class="small-line"></span> A platform by Levanta Group</div>
+        <p class="eyebrow" data-i18n="eyebrow">Stay in the loop</p>
+        <h2 data-i18n-html="heading">Good things<br />start with<br /><span>a conversation.</span></h2>
+        <p data-i18n-html="intro">Have a question or want to know what’s next?<br class="desktop" /> We’d love to hear from you.</p>
+        <div class="brand-note"><span class="small-line"></span> <span data-i18n="platform">A platform by Levanta Group</span></div>
       </div>
 
       <form class="contact-form" novalidate>
-        <h3>Contact us</h3>
+        <h3 data-i18n="contact">Contact us</h3>
         <div class="field">
-          <label for="name">Name</label>
-          <input id="name" name="name" autocomplete="name" placeholder="Your name" required maxlength="100" />
+          <label for="name" data-i18n="name">Name</label>
+          <input id="name" name="name" autocomplete="name" placeholder="Your name" data-i18n-ph="namePh" required maxlength="100" />
         </div>
         <div class="field">
-          <label for="email">Email</label>
+          <label for="email" data-i18n="email">Email</label>
           <input id="email" name="email" type="email" autocomplete="email" placeholder="you@example.com" required maxlength="254" />
         </div>
         <div class="field">
-          <label for="message">Message</label>
-          <textarea id="message" name="message" placeholder="How can we help?" rows="3" required maxlength="5000"></textarea>
+          <label for="message" data-i18n="message">Message</label>
+          <textarea id="message" name="message" placeholder="How can we help?" data-i18n-ph="messagePh" rows="3" required maxlength="5000"></textarea>
         </div>
         <label class="checkbox">
           <input type="checkbox" name="emailOptIn" />
-          <span>Sign up for our email list for updates, promotions and more.</span>
+          <span data-i18n="optin">Sign up for our email list for updates, promotions and more.</span>
         </label>
         <div class="honeypot" aria-hidden="true"><label>Leave empty<input tabindex="-1" autocomplete="off" name="website" /></label></div>
         <button class="send" type="submit">
-          <span class="send-label">Send</span>
+          <span class="send-label" data-i18n="send">Send</span>
           <span class="arrow-chip" aria-hidden="true">
             <svg viewBox="0 0 24 24"><path d="M5 12h13M13 6.5 18.5 12 13 17.5" /></svg>
             <svg viewBox="0 0 24 24"><path d="M5 12h13M13 6.5 18.5 12 13 17.5" /></svg>
@@ -99,11 +99,11 @@
       <div class="legal">
         <p>© 2026 Splash Car</p>
         <nav aria-label="Legal">
-          <a href="terms.html">Terms &amp; Conditions</a>
-          <a href="privacy.html">Privacy Policy</a>
+          <a href="terms.html" data-i18n="terms">Terms &amp; Conditions</a>
+          <a href="privacy.html" data-i18n="privacy">Privacy Policy</a>
         </nav>
       </div>
-      <span class="tagline">Automotive care. A cleaner journey ahead.</span>
+      <span class="tagline" data-i18n="tagline">Automotive care. A cleaner journey ahead.</span>
     </footer>
   </main>
 
@@ -126,6 +126,6 @@
     </label>
   </div>
 
-  <script src="main.js?v=17"></script>
+  <script src="main.js?v=30"></script>
 </body>
 </html>
